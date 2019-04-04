@@ -1,0 +1,17 @@
+<!-- Launch file for Depth Completer -->
+<launch>
+  <arg name="input_image_topic" default="/depth_image"/> <!--The 2D projected point cloud image, output of cloud_projector -->
+  <arg name="fill_type" default="multiscale"/>           <!--Complation type. Valid options are: ["multiscale" | "fast"] -->
+  <arg name="extrapolate" default="false"/>              <!--The flag whether extrapolation is executed -->
+  <arg name="blur_type" default="bilateral"/>             <!--Image blur processing type. Valid options are: ["bilateral | "gaussian"]-->
+  <arg name="use_gpu" default="true"/> <!--The flag whether GPU acceleration is used. -->
+
+    <!-- rosrun points_preprocessor depth_completer -->
+    <node pkg="points_preprocessor" type="depth_completer" name="depth_completer" output="screen">
+      <param name="input_image_topic" value="$(arg input_image_topic)" />
+      <param name="fill_type" value="$(arg fill_type)" />
+      <param name="extrapolate" value="$(arg extrapolate)" />
+      <param name="blur_type" value="$(arg blur_type)" />
+      <param name="use_gpu" value="$(arg use_gpu)" />
+    </node>
+</launch>

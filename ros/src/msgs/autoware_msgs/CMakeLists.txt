@@ -21,6 +21,7 @@ add_message_files(
             ControlCommand.msg
             DetectedObject.msg
             DetectedObjectArray.msg
+            DepthImage.msg
             ExtractedPosition.msg
             ImageLaneObjects.msg
             ImageObjects.msg

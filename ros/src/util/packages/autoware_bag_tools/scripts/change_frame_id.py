@@ -78,6 +78,8 @@ def change_frame_id(inbag,outbag,frame_ids,topics):
     outbag.write(topic, msg, t)
   rospy.loginfo('Closing output bagfile and exit...')
   outbag.close()
+
+
 def progress_bar(iteration, total):
   length = 50
   percent = ("{0:." + str(1) + "f}").format(100 * (iteration / float(total)))

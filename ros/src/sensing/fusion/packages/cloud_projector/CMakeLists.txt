@@ -95,7 +95,7 @@ target_include_directories(cloud_projector PRIVATE
 target_link_libraries(cloud_projector
         cloud_projector_lib)
 
-install(TARGETS cloud_projector
+install(TARGETS cloud_projector cloud_projector_lib
         ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})

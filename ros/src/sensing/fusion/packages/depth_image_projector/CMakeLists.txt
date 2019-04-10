@@ -95,7 +95,7 @@ target_include_directories(depth_image_projector PRIVATE
 target_link_libraries(depth_image_projector
         depth_image_projector_lib)
 
-install(TARGETS depth_image_projector
+install(TARGETS depth_image_projector depth_image_projector_lib
         ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})

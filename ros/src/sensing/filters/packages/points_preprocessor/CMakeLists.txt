@@ -15,6 +15,8 @@ find_package(catkin REQUIRED COMPONENTS
         velodyne_pointcloud
         tf
         rospy
+        autoware_msgs
+        autoware_health_checker
         )
 
 catkin_package(CATKIN_DEPENDS
@@ -28,6 +30,8 @@ catkin_package(CATKIN_DEPENDS
         autoware_config_msgs
         tf
         rospy
+        autoware_msgs
+        autoware_health_checker
         )
 
 find_package(Qt5Core REQUIRED)

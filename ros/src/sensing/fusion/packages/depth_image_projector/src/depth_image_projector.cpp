@@ -69,26 +69,28 @@ void RosDepthImageProjectorApp::DepthImageCallback(const autoware_msgs::DepthIma
   image_size_ = depth_image.size();
 
   cv::Mat normalized_depth_image(image_size_.height, image_size_.width, CV_32FC1);
+
   cv::normalize(depth_image, normalized_depth_image, max_depth_, min_depth_, cv::NORM_MINMAX, CV_32FC1);
 
   pcl::PointCloud<pcl::PointXYZ> depth_cloud;
 
-  for (size_t i = 0; i < image_size_.height; i++) {
-    for (size_t j = 0; j < image_size_.width; j++) {
+  for (size_t i = 0; i < image_size_.width; i++) {
+    for (size_t j = 0; j < image_size_.height; j++) {
+//      std::cout << "Normalize (" << i << ", " << j << "), " << image_size_.height << ", " << image_size_.width << ")\n";
       float z = normalized_depth_image.at<float>(j,i);
-
       if (z > min_depth_) {
+//        std::cout << "Get Pt\n";
         pcl::PointXYZ cam_point, cloud_point;
         cam_point.x = (i - cx_) * z / fx_;
         cam_point.y = (j - cy_) * z / fy_;
         cam_point.z = z;
+//        std::cout << "TF\n";
         cloud_point = TransformPoint(cam_point, camera_lidar_tf_);
+//        std::cout << "Push-backF\n";
         depth_cloud.push_back(cloud_point);
       }
     }
   }
-  std::cout << depth_cloud;
-
   sensor_msgs::PointCloud2 out_cloud_msg;
   pcl::toROSMsg(depth_cloud, out_cloud_msg);
   out_cloud_msg.header = in_depth_msg->header;
@@ -156,7 +158,7 @@ void RosDepthImageProjectorApp::InitializeRosIo(ros::NodeHandle &in_private_hand
   std::string name_space_str = ros::this_node::getNamespace();
 
   ROS_INFO("[%s] This node requires: Registered TF(Lidar-Camera), CameraInfo, Image, and PointCloud.", __APP_NAME__);
-  in_private_handle.param<std::string>("depth_image_src", depth_image_src, "/points_image");
+  in_private_handle.param<std::string>("depth_image_src", depth_image_src, "/depth_image");
   ROS_INFO("[%s] depth_image_src: %s", __APP_NAME__, depth_image_src.c_str());
 
   in_private_handle.param<std::string>("camera_info_src", camera_info_src, "/camera_info");
@@ -172,16 +174,17 @@ void RosDepthImageProjectorApp::InitializeRosIo(ros::NodeHandle &in_private_hand
     camera_info_src = name_space_str + camera_info_src;
   }
 
-  //generate subscribers and sychronizers
+  //generate subscribers and synchronizers
   ROS_INFO("[%s] Subscribing to... %s", __APP_NAME__, camera_info_src.c_str());
   intrinsics_subscriber_ = in_private_handle.subscribe(camera_info_src,
                                                        1,
                                                        &RosDepthImageProjectorApp::IntrinsicsCallback, this);
 
-  ROS_INFO("[%s] Subscribing to... %s", __APP_NAME__, points_src.c_str());
+  ROS_INFO("[%s] Subscribing to... %s", __APP_NAME__, depth_image_src.c_str());
   depth_image_subscriber_ = in_private_handle.subscribe(depth_image_src,
-                                                  1,
-                                                  &RosDepthImageProjectorApp::DepthImageCallback, this);
+                                                       1,
+                                                       &RosDepthImageProjectorApp::DepthImageCallback, this);
+
 
   cloud_publisher_ = node_handle_.advertise<sensor_msgs::PointCloud2>(cloud_topic_str, 1);
   ROS_INFO("[%s] Publishing projected pointcloud in %s", __APP_NAME__, cloud_topic_str.c_str());

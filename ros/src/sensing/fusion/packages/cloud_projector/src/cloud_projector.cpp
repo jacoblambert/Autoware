@@ -69,6 +69,9 @@ void RosCloudProjectorApp::CloudCallback(const sensor_msgs::PointCloud2::ConstPt
   cv::Mat cloud_projected_image(image_size_.height, image_size_.width, CV_32FC1);
   cv::Mat normalized_output;
 
+  float min_allowed_depth = 2;
+  float max_allowed_depth = 100;
+
 //#pragma omp for
   for (size_t i = 0; i < in_cloud.points.size(); i++)
   {
@@ -77,11 +80,12 @@ void RosCloudProjectorApp::CloudCallback(const sensor_msgs::PointCloud2::ConstPt
     int v = int(cam_cloud[i].y * fy_ / cam_cloud[i].z + cy_);
     if ((u >= 0) && (u < image_size_.width)
         && (v >= 0) && (v < image_size_.height)
-        && cam_cloud[i].z > 2
-        && cam_cloud[i].z < 100
+        && cam_cloud[i].z > min_allowed_depth
+        && cam_cloud[i].z < max_allowed_depth
       )
     {
       //cloud_projected_image.at<float>(cv::Point(u, v)) = cam_cloud[i].z;
+//      float depth_value = float(max_allowed_depth+min_allowed_depth-cam_cloud[i].z);
       cv::circle(cloud_projected_image, cv::Point(u, v), 1, cv::Scalar_<float>(cam_cloud[i].z), -1);
     }
   }
@@ -91,7 +95,7 @@ void RosCloudProjectorApp::CloudCallback(const sensor_msgs::PointCloud2::ConstPt
   cv::minMaxLoc(cloud_projected_image, &min_depth, &max_depth);
 
   // Normalize
-  cv::normalize(cloud_projected_image, normalized_output, 65535, 0, cv::NORM_MINMAX, CV_16UC1);
+  cv::normalize(cloud_projected_image, normalized_output, 0, 65535, cv::NORM_MINMAX, CV_16UC1);
 
   // Build Messages
   // Vis Image

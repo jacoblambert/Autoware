@@ -137,7 +137,14 @@ namespace {
 
       // Load depth projections from uint16 image
       cv::Mat projected_depths;
-      input_depth_image.convertTo(projected_depths, CV_32F, 1.0/255);
+//      input_depth_image.convertTo(projected_depths, CV_32F, 1.0);
+      cv::normalize(input_depth_image, projected_depths, 255, 0, cv::NORM_MINMAX, CV_32F);
+      double min_depth1, max_depth1;
+      cv::minMaxLoc(input_depth_image, &min_depth1, &max_depth1);
+      double min_depth2, max_depth2;
+      cv::minMaxLoc(projected_depths, &min_depth2, &max_depth2);
+      std::cout << "In: (" << min_depth1 << ", " << max_depth1 << ")" << ", (" << min_depth2 << ", " << max_depth2 << ")\n";
+
 
       // Execute completion core
       cv::Mat final_depths;
@@ -173,9 +180,16 @@ namespace {
         ROS_ERROR_STREAM("Empty result is detected. Completion failed.");
         return;
       }
-
       cv::Mat final_image;
+//      cv::Mat converted_depths;
+//      final_depths.convertTo(converted_depths, CV_16UC1), 255/1.0);
       cv::normalize(final_depths, final_image, 65535, 0, cv::NORM_MINMAX, CV_16UC1);
+//      final_depths.convertTo(final_image, CV_16UC1, 255/1.0);
+
+      cv::minMaxLoc(final_depths, &min_depth1, &max_depth1);
+      cv::minMaxLoc(final_image, &min_depth2, &max_depth2);
+      std::cout << "Out: (" << min_depth1 << ", " << max_depth1 << ")" << ", (" << min_depth2 << ", " << max_depth2 << ")\n";
+
 
       //auto time_measurement_end = std::chrono::system_clock::now();
       //double elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(time_measurement_end -  time_measurement_start).count();

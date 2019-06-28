@@ -158,7 +158,7 @@ void RosDepthImageProjectorApp::InitializeRosIo(ros::NodeHandle &in_private_hand
   std::string name_space_str = ros::this_node::getNamespace();
 
   ROS_INFO("[%s] This node requires: Registered TF(Lidar-Camera), CameraInfo, Image, and PointCloud.", __APP_NAME__);
-  in_private_handle.param<std::string>("depth_image_src", depth_image_src, "/depth_image");
+  in_private_handle.param<std::string>("depth_image_src", depth_image_src, "/points_depth");
   ROS_INFO("[%s] depth_image_src: %s", __APP_NAME__, depth_image_src.c_str());
 
   in_private_handle.param<std::string>("camera_info_src", camera_info_src, "/camera_info");
